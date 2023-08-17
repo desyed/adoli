@@ -1,13 +1,63 @@
+"use client"
 import Image from 'next/image'
+import {signInWithPopup} from "firebase/auth";
+import {logout, signInWithGoogle} from "@/firebase/auth/signin";
+import {useEffect, useState} from "react";
+// import {useRouter} from "next/router";
+import {useAuthContext} from "@/firebase/auth/authContext";
+import {storage, storageRef} from "@/firebase/config";
+import {uploadBytes} from "@firebase/storage";
+import {getDownloadURL, ref} from "firebase/storage";
 
 export default function Home() {
+  // @ts-ignore
+  const { user } = useAuthContext()
+  // const router = useRouter()
+
+  useEffect(() => {
+    // if (user == null) router.push("/")
+  }, [user])
+
+  const loginWIthGoogle = async () => {
+      try {
+        await signInWithGoogle();
+      } catch (err){
+        console.error(err);
+      }
+  }
+
+  const signout = async () => {
+    await logout()
+  }
+
+  const [image, setImage] = useState<any | null>(null);
+  const upload = () => {
+    if (image == null)
+      return;
+    const storageRef = ref(storage, 'images/' + image.name);
+    const uploadTask = uploadBytes(storageRef, image);
+    uploadTask.then(res => {
+      getDownloadURL(storageRef).then((downloadURL) => {
+        console.log('File available at', downloadURL);
+      });
+    })
+
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
+
+          <button className="font-mono font-bold" onClick={loginWIthGoogle}>loginWithGoogle</button>
+        {user ? user?.email : 'no'}
+        <button onClick={signout}>logout</button>
+
+        <center>
+          <input type="file" onChange={(e) =>
+          { // @ts-ignore
+            setImage(e?.target?.files[0] || null) }} />
+          <button onClick={upload}>Upload</button>
+        </center>
         <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
           <a
             className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
