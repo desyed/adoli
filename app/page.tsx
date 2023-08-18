@@ -7,6 +7,7 @@ import {useAuthContext} from "@/firebase/auth/authContext";
 import {storage} from "@/firebase/config";
 import {uploadBytes} from "@firebase/storage";
 import {getDownloadURL, ref} from "firebase/storage";
+import {getImageUrl, uploadImage} from "@/lib/storage";
 
 export default function Home() {
   // @ts-ignore
@@ -15,8 +16,13 @@ export default function Home() {
 
   useEffect(() => {
     // if (user == null) router.push("/")
+    getImge()
   }, [user])
 
+  async function getImge(){
+    const res2 = await getImageUrl('images/1692387433246-Screenshot 2023-08-18 225539.png')
+    console.log(res2)
+  }
   const loginWIthGoogle = async () => {
       try {
         await signInWithGoogle();
@@ -30,16 +36,19 @@ export default function Home() {
   }
 
   const [image, setImage] = useState<any | null>(null);
-  const upload = () => {
+  const upload = async () => {
     if (image == null)
       return;
-    const storageRef = ref(storage, 'images/' + image.name);
-    const uploadTask = uploadBytes(storageRef, image);
-    uploadTask.then(res => {
-      getDownloadURL(storageRef).then((downloadURL) => {
-        console.log('File available at', downloadURL);
-      });
-    })
+    // const storageRef = ref(storage, 'images/' + image.name);
+    // const uploadTask = uploadBytes(storageRef, image);
+    // uploadTask.then(res => {
+    //   getDownloadURL(storageRef).then((downloadURL) => {
+    //     console.log('File available at', downloadURL);
+    //   });
+    // })
+
+    const res = await uploadImage(image)
+
 
   }
 

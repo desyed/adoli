@@ -9,5 +9,8 @@ export const getImageUrl = (path: string) => getDownloadURL(ref(storage, path));
 export const uploadImage = async (file: File) => {
     const imageRef = ref(storage, `images/${Date.now()}-${file.name}`);
     const uploadResult = await uploadBytes(imageRef, file);
-    return uploadResult?.ref?.fullPath
+    if(uploadResult){
+        return await getImageUrl(uploadResult?.ref?.fullPath)
+    }
+    return null;
 }
