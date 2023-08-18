@@ -1,11 +1,10 @@
 "use client"
 import Image from 'next/image'
-import {signInWithPopup} from "firebase/auth";
-import {logout, signInWithGoogle} from "@/firebase/auth/signin";
+import {logout, signInWithGoogle} from "@/firebase/auth/authentication";
 import {useEffect, useState} from "react";
-// import {useRouter} from "next/router";
+import {useRouter} from "next/router";
 import {useAuthContext} from "@/firebase/auth/authContext";
-import {storage, storageRef} from "@/firebase/config";
+import {storage} from "@/firebase/config";
 import {uploadBytes} from "@firebase/storage";
 import {getDownloadURL, ref} from "firebase/storage";
 
